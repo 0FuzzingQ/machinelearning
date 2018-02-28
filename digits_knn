@@ -1,0 +1,57 @@
+import numpy as np
+import math
+import os
+import os.path 
+
+trainsamplelist = {}
+knn_length = {}
+knn_result = {}
+
+def trainsample():
+	root_path = "./trainingDigits"
+	for parent,dirnames,filenames in os.walk(root_path):
+		for filename in filenames:
+			tmp_eye = np.eye(32)
+			f = open("./trainingDigits/"+filename)
+			for i in range(0,32):
+				li = f.readline()
+				for j in range(0,32):
+					tmp_eye[i][j] = int(li[j])
+					#print tmp_eye[i][j]
+			trainsamplelist[filename] = tmp_eye
+			f.close()
+		break	
+		#print trainsamplelist
+
+def testsample():
+	test_path = "./testDigits"
+	test_eye = np.eye(32)
+	#for parent,dirnames,filenames in os.walk(test_path):
+	f = open("./testDigits/3_8.txt")
+	for i in range(0,32):
+		li = f.readline()
+		for j in range(0,32):
+			test_eye[i][j] = int(li[j])
+	for i in range(0,len(trainsamplelist)):
+		knn_length[trainsamplelist.keys()[i]] = test_eye - trainsamplelist[trainsamplelist.keys()[i]]
+	print len(knn_length)
+	for count in range(0,len(knn_length)):
+		tmp_sum = 0
+		for i in range(0,32):
+			for j in range(0,32):
+				#tmp_sum = tmp_sum + knn_length[knn_length.keys()[count]][i][j] ** 2
+				tmp_key = knn_length.keys()[count]
+				tmp_axis = knn_length[tmp_key]
+				tmp_sum = tmp_sum + tmp_axis[i][j] ** 2
+		
+		knn_result[knn_length.keys()[count]] = tmp_sum
+
+	print sorted(knn_result.iteritems(), key=lambda d:d[1], reverse = False )
+
+
+def result():
+	trainsample()
+	testsample()
+	
+if __name__ == '__main__':
+	result()
